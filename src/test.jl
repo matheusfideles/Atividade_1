@@ -38,19 +38,11 @@ function scatter_residue(x,y,prob,m)
     savefig("images/Problema ("*Char(64+prob)*") - Resíduos.png")
 end
 
-#Gráficos de dispersão para tempo
-function scatter_time(x,y,prob,m)
-    p=plot(x,[y[j] for j=1:m],label=["LU com Piv. Parcial" "LU" "Cholesky" "Inversa"])
-    title!("Problema ("*Char(64+prob)*")")
-    xlabel!(L"$n$")
-    ylabel!(L"$Tempo (s)$")
-    savefig("images/Problema ("*Char(64+prob)*") - Tempos.png")
-end
-
 #Gráficos de reta/dispersão para um dado método com o desempenho de tempo do algoritmo, residuo e erro relativo para um conjunto de dimensões n
 function plot_lines(dim)
     #Eixo x do gráfico são as dimensões
-    met=["plu","lu","chol","inv"]
+    #met=["plu","lu","chol","inv"]
+    met=["inv"]
     n=size(dim,1)
     m=size(met,1)
 
@@ -66,12 +58,72 @@ function plot_lines(dim)
     #Fazendo só com matriz simétrica, no momento
     for i=1:9
         resp=resultMatrix(i,dim,met,true)  
-        erros=[resp[:,1,k] for k=1:m]
-        residuos=[resp[:,2,k] for k=1:m]
+        #erros=[resp[:,1,k] for k=1:m]
+        #residuos=[resp[:,2,k] for k=1:m]
         tempos=[resp[:,3,k] for k=1:m]
         #Construindo e salvando os gráfico como imagens
-        scatter_error(dim,erros,i,m)
-        scatter_residue(dim,residuos,i,m)
-        scatter_time(dim,tempos,i,m)
+        #scatter_error(dim,erros,i,m)
+        #scatter_residue(dim,residuos,i,m)
+        #scatter_time(dim,tempos,i,m)
+        scatter_time_singular(dim, resp[:,3,1],i,met[1])
     end
+end
+
+#Função que plota a dispersão para dados valores de n do sistema relacionado ao i-esimo problema usando um único método
+function plot_time(dim,i,met)
+    #Arrumando label do gráfico
+    if met=="inv"
+        metodo="Inversa"
+    elseif met=="plu"
+        metodo="LU com Piv. Parcial"
+    elseif met=="lu"
+        metodo="LU"
+    else
+        metodo="Cholesky"
+    end
+
+    #Alocando tempos
+    n=size(dim,1)
+    tempos=zeros(n,1)
+
+    #Obtendo os dados
+    resp=resultMatrix(i,dim,[met],true)
+    tempos=resp[:,3,1]
+
+    #Construindo o gráfico
+    plot(dim,tempos,label=metodo)
+    xlabel!(L"$n$")
+    ylabel!(L"$Tempo (s)$")
+    savefig("images/Tempo - "*metodo)
+end
+
+function plot_time_mult(dim,i,met)
+    m=size(met,1)
+    metodos=Matrix{String}(undef,1,m)
+    for i=1:m
+        if met[i]=="inv"
+            metodos[i]="Inversa"
+        elseif met[i]=="plu"
+            metodos[i]="LU com Piv. Parcial"
+        elseif met[i]=="lu"
+            metodos[i]="LU"
+        else
+            metodos[i]="Cholesky"
+        end
+    end
+
+    #Alocando tempos
+    n=size(dim,1)
+    tempos=zeros(n,1)
+
+    #Obtendo os dados
+    resp=resultMatrix(i,dim,met,true)
+    tempos=resp[:,3,1:m]
+
+    #Construindo o gráfico
+    plot(dim,[tempos[:,j] for j=1:m],label=metodos)
+    xlabel!(L"$n$")
+    ylabel!(L"$Tempo (s)$")
+    savefig("images/Tempo - Mult")
+
 end
