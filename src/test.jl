@@ -97,7 +97,7 @@ function plot_time(dim,i,met)
     savefig("images/Tempo - "*metodo)
 end
 
-function plot_time_mult(dim,i,met)
+function plot_time_Mult(dim,i,met)
     m=size(met,1)
     metodos=Matrix{String}(undef,1,m)
     for i=1:m
@@ -124,6 +124,5 @@ function plot_time_mult(dim,i,met)
     plot(dim,[tempos[:,j] for j=1:m],label=metodos)
     xlabel!(L"$n$")
     ylabel!(L"$Tempo (s)$")
-    savefig("images/Tempo - Mult")
-
+    savefig("images/Tempos.png")
 end
