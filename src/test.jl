@@ -38,66 +38,35 @@ function scatter_residue(x,y,prob,m)
     savefig("images/Problema ("*Char(64+prob)*") - Resíduos.png")
 end
 
-#Gráficos de reta/dispersão para um dado método com o desempenho de tempo do algoritmo, residuo e erro relativo para um conjunto de dimensões n
-function plot_lines(dim)
-    #Eixo x do gráfico são as dimensões
-    #met=["plu","lu","chol","inv"]
-    met=["inv"]
-    n=size(dim,1)
-    m=size(met,1)
-
-    #Alocando matrizes com valores de y para cada gráfico
-    #Tempos -> entrada (i,j) nos dá o tempo de resolução do problema i de dimensão j
-    #erros/residuos -> entrada (i,j) nos dá o erro relativo/residuo relativo obtido ao resolver o problema i de dimensão j
-    tempos=zeros(n,m)
-    erros=zeros(n,m) 
-    residuos=zeros(n,m)
-    resp=zeros(n,3,m)
-
-    #Calculando os erros, resíduos e tempos -> para cada problema e variamos o método (que vai ser entendido como uma curva)
-    #Fazendo só com matriz simétrica, no momento
+#Função que plota os tempos para cada problema de teste com um conjunto de dimensões dado e um método específico
+function plot_times_all(dim,met)
+    #Iterando para cada problema
+    tempo=[]
     for i=1:9
-        resp=resultMatrix(i,dim,met,true)  
-        #erros=[resp[:,1,k] for k=1:m]
-        #residuos=[resp[:,2,k] for k=1:m]
-        tempos=[resp[:,3,k] for k=1:m]
-        #Construindo e salvando os gráfico como imagens
-        #scatter_error(dim,erros,i,m)
-        #scatter_residue(dim,residuos,i,m)
-        #scatter_time(dim,tempos,i,m)
-        scatter_time_singular(dim, resp[:,3,1],i,met[1])
+        resp=resultMatrix(i,dim,[met])
+        push!(tempo,resp[:,3,1])
     end
-end
 
-#Função que plota a dispersão para dados valores de n do sistema relacionado ao i-esimo problema usando um único método
-function plot_time(dim,i,met)
     #Arrumando label do gráfico
     if met=="inv"
         metodo="Inversa"
     elseif met=="plu"
-        metodo="LU com Piv. Parcial"
+        metodo="LU com Piv Parcial"
     elseif met=="lu"
         metodo="LU"
     else
         metodo="Cholesky"
     end
 
-    #Alocando tempos
-    n=size(dim,1)
-    tempos=zeros(n,1)
-
-    #Obtendo os dados
-    resp=resultMatrix(i,dim,[met],true)
-    tempos=resp[:,3,1]
-
-    #Construindo o gráfico
-    plot(dim,tempos,label=metodo)
+    #Criando o gráfico e salvando
+    plot(dim,tempo,label=["A" "B" "C" "D" "E" "F" "G" "H" "I"])
     xlabel!(L"$n$")
     ylabel!(L"$Tempo (s)$")
-    savefig("images/Tempo - "*metodo)
+    savefig("images/Tempos - Todos os prob - "*metodo)
 end
 
-function plot_time_Mult(dim,i,met)
+#Função que plota os tempos na resolução do i-esimo problema com os métodos dados para um conjunto de dimensões
+function plot_times(i,dim,met)
     m=size(met,1)
     metodos=Matrix{String}(undef,1,m)
     for i=1:m
@@ -124,5 +93,5 @@ function plot_time_Mult(dim,i,met)
     plot(dim,[tempos[:,j] for j=1:m],label=metodos)
     xlabel!(L"$n$")
     ylabel!(L"$Tempo (s)$")
-    savefig("images/Tempos.png")
+    savefig("images/Tempos - Metodos")
 end
