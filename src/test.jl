@@ -25,9 +25,14 @@ function cond_table(dim)
 end
 
 #Gráficos de dispersão do residuo relativo para um conjunto de métodos e problema fixo
-function scatter_residue(i,dim,met=["plu" "lu" "chol" "inv"])
+function scatter_residue(i,dim,met=["plu","lu","chol","inv"])
     m=size(met,1); resp=resultMatrix(i,dim,met)
-    
+    #String para separar os arquivos na hora de gerar os gráficos e não ir sobreescrevendo
+    aux=""
+    for i=1:m
+       aux=aux*met[i]*" " 
+    end
+
     #Arrumando label do gráfico
     metodos=[]
     for i=1:m
@@ -41,6 +46,7 @@ function scatter_residue(i,dim,met=["plu" "lu" "chol" "inv"])
             push!(metodos,"Cholesky")
         end
     end
+    metodos=reshape(metodos,(1,m))
     
     #Vetores dos residuos
     residuo=[]
@@ -49,16 +55,21 @@ function scatter_residue(i,dim,met=["plu" "lu" "chol" "inv"])
     end
 
     #Plotando o gráfico
-    scatter(dim,residuo,label=metodos)
+    scatter(dim,residuo,label=metodos,legend=:topleft)
     xlabel!(L"$n$")
-    ylabel!(L"\frac{||Ax-||}{||x^*||}")
-    savefig("images/Residuos - Metodos")
+    ylabel!(L"\frac{||Ax-b||}{||b||}")
+    savefig("images/Residuos - Metodos - Prob ("*Char(64+i)*") - "*aux)
 end
 
 #Gráficos de dispersão do erro relativo para um conjunto de métodos e problema fixo
 function scatter_error(i,dim,met=["plu","lu","chol","inv"])
     m=size(met,1); resp=resultMatrix(i,dim,met)
-    
+    #String para separar os arquivos na hora de gerar os gráficos e não ir sobreescrevendo
+    aux=""
+    for i=1:m
+       aux=aux*met[i]*" " 
+    end
+
     #Arrumando label do gráfico
     metodos=[]
     for i=1:m
@@ -84,7 +95,7 @@ function scatter_error(i,dim,met=["plu","lu","chol","inv"])
     scatter(dim,erro,label=metodos,legend=:topleft)
     xlabel!(L"$n$")
     ylabel!(L"\frac{||x-x^*||}{||x^*||}")
-    savefig("images/Erros - Metodos - Prob ("*Char(64+i)*")")
+    savefig("images/Erros - Metodos - Prob ("*Char(64+i)*") - "*aux)
 end
 
 #Função que plota os tempos para cada problema de teste com um conjunto de dimensões dado e um método específico
@@ -115,8 +126,15 @@ function plot_times_all(dim,met)
 end
 
 #Função que plota os tempos na resolução do i-esimo problema com os métodos dados para um conjunto de dimensões
-function plot_times(i,dim,met)
+function plot_times(i,dim,met=["plu","lu","chol","inv"])
     m=size(met,1); metodos=Matrix{String}(undef,1,m)
+
+    #String para separar os arquivos na hora de gerar os gráficos e não ir sobreescrevendo
+    aux=""
+    for i=1:m
+       aux=aux*met[i]*" " 
+    end
+
     for i=1:m
         if met[i]=="inv"
             metodos[i]="Inversa"
@@ -141,5 +159,5 @@ function plot_times(i,dim,met)
     scatter(dim,[tempos[:,j] for j=1:m],label=metodos)
     xlabel!(L"$n$")
     ylabel!(L"$Tempo (s)$")
-    savefig("images/Tempos - Metodos")
+    savefig("images/Tempos - Metodos - ("*Char(64+i)*") - "*aux)
 end
