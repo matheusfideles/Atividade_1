@@ -80,7 +80,7 @@ end
 
 #Gera uma matriz aleatória nxn com entradas em [-M,M]
 function randSqMatrix(n)
-    M=99; R=M*(2*rand(n,n).-1)
+    M=999; R=M*(2*rand(n,n).-1)
     return R
 end
 
@@ -90,14 +90,31 @@ function testMatrix(i,n,simet=true)
     #Definindo matriz diagonal
     D=diagMatrix(i,n)
     #Checamos qual matriz de teste será fornecida (simétrica ou não)
-    M=randSqMatrix(n); Qrm=qr(M)
+    M=randSqMatrix(n); Qrm=qr(M); qm=Matrix(Qrm.Q)
     if simet
-        A=Qrm.Q*D*Qrm.Q'
+        A=qm*D*qm'
+        #Evitando erro numérico -> Forçando a ser simétrica
+        for i=1:n
+            for j=(i+1):n
+                A[i,j]=A[j,i]
+            end
+        end
     else
-        N=randSqMatrix(n); Qrn=qr(N)
-        A=Qrm.Q*D*Qrn.Q'
+        N=randSqMatrix(n); Qrn=qr(N); qn=Matrix(Qrn.Q)
+        A=qm.Q*D*qn'
     end
     return A
+end
+
+function testarSimetrica(n)
+    cont=0
+    for i=1:10000
+        A=testMatrix(1,n)
+        if A==A'
+            cont+=1
+        end
+    end
+    return cont
 end
 
 #Função auxiliar que retorna ou a fatoração de Cholesky ou a fatoração PLU ou a fatoração LU de A
