@@ -1,51 +1,94 @@
 using LinearAlgebra
+
 #Função referente à primeira questão, recebe i alternativa e n dimensao
 function diagMatrix(i,n)
     D=zeros(n,n);
     k=0;
     #vendo qual alternativa
     if i==1
-        for j=1:n
-            D[j,j]=1.001^j
+        for i=1:n
+            D[i,i]=1.001^i
         end
     elseif i==2
-        for j=1:n
-            D[j,j]=(-1.001)^j
+        for i=1:n
+            D[i,i]=(-1.001)^i
         end
-    elseif i==3
-        for j=1:n
-            k=floor(10/n*j)
-            D[j,j]=k/100+1
+    elseif i==3 
+        cont=n; k=0;
+        while cont>=10 
+            for i=1:10
+                D[10*k+i,10*k+i]=k/100+1
+            end
+            cont-=10; k+=1
+        end
+        for i=1:cont
+            D[10*k+i,10*k+i]=k/100+1
         end
     elseif i==4
-        for j=1:n
-            k=floor(10/n*j)
-            D[j,j]=k+1
+        cont=n; k=0;
+        while cont>=10 
+            for i=1:10
+                D[10*k+i,10*k+i]=k+1
+            end
+            cont-=10; k+=1
+        end
+        for i=1:cont
+            D[10*k+i,10*k+i]=k+1
         end
     elseif i==5
-        for j=1:n
-            k=floor(10/n*j)
-            D[j,j]=k+1.0001^j
+        cont=n; k=0;
+        while cont>=10 
+            for i=1:10
+                D[10*k+i,10*k+i]=k+(1.0001)^i
+            end
+            cont-=10; k+=1
+        end
+        for i=1:cont
+            D[10*k+i,10*k+i]=k+(1.0001)^i
         end
     elseif i==6
-        for j=1:n
-            k=floor(10/n*j)
-            D[j,j]=10*k+1
+        cont=n; k=0;
+        while cont>=10 
+            for i=1:10
+                D[10*k+i,10*k+i]=10*k+1
+            end
+            cont-=10; k+=1
+        end
+        for i=1:cont
+            D[10*k+i,10*k+i]=10*k+1
         end
     elseif i==7
-        for j=1:n
-            k=floor(10/n*j)
-            D[j,j]=(-1)^j*10*k+1
-          end
+        cont=n; k=0;
+        while cont>=10 
+            for i=1:10
+                D[10*k+i,10*k+i]=(-1)^(10*k+i)*10*k+1
+            end
+            cont-=10; k+=1
+        end
+        for i=1:cont
+            D[10*k+i,10*k+i]=(-1)^(10*k+i)*10*k+1
+        end
     elseif i==8
-        for j=1:n
-            k=floor(10/n*j)
-            D[j,j]=100*k+1
+        cont=n; k=0;
+        while cont>=10 
+            for i=1:10
+                D[10*k+i,10*k+i]=100*k+1
+            end
+            cont-=10; k+=1
+        end
+        for i=1:cont
+            D[10*k+i,10*k+i]=100*k+1
         end
     else
-        for j=1:n
-            k=floor(10/n*j)
-            D[j,j]=1000*k+1
+        cont=n; k=0;
+        while cont>=10  
+            for i=1:10
+                D[10*k+i,10*k+i]=1000*k+1
+            end
+            cont-=10; k+=1
+        end
+        for i=1:cont
+            D[10*k+i,10*k+i]=1000*k+1
         end
     end
     return D
@@ -54,26 +97,21 @@ end
 #Retorna o numero de condição na norma 2 das matrizes de testes sabendo os autovalores
 #cond=lambda_max/lambda_min
 function conditionNumber(i,n)
-    cond=0; kmax=10; kmin=floor(10/n)
-    #vendo qual alternativa
-    if i==1
-        cond=1.001^n/1.001
-    elseif i==2
+    cond=0; kmax=floor((n-1)/10)
+    if i==1 || i==2
         cond=1.001^n/1.001
     elseif i==3
-        cond=(kmax/100+1)/(kmin/100+1)
+        cond=kmax/100+1
     elseif i==4
-        cond=(kmax+1)/(kmin+1)
+        cond=kmax+1
     elseif i==5
-        cond=(kmax+1.0001^n)/(kmin+1.0001)
-    elseif i==6
-        cond=(10*kmax+1)/(10*kmin+1)
-    elseif i==7
-        cond=(10*kmax+1)/(10*kmin+1)
+        cond=(kmax+1.0001^n)/1.0001
+    elseif i==6 || i==7
+        cond=10*kmax+1
     elseif i==8
-        cond=(100*kmax+1)/(100*kmin+1)
+        cond=100*kmax+1
     else
-        cond=(1000*kmax+1)/(1000*kmin+1)
+        cond=1000*kmax+1
     end
     return cond
 end
@@ -100,21 +138,11 @@ function testMatrix(i,n,simet=true)
             end
         end
     else
+        #Caso da não simétrica
         N=randSqMatrix(n); Qrn=qr(N); qn=Matrix(Qrn.Q)
         A=qm.Q*D*qn'
     end
     return A
-end
-
-function testarSimetrica(n)
-    cont=0
-    for i=1:10000
-        A=testMatrix(1,n)
-        if A==A'
-            cont+=1
-        end
-    end
-    return cont
 end
 
 #Função auxiliar que retorna ou a fatoração de Cholesky ou a fatoração PLU ou a fatoração LU de A

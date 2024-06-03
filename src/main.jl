@@ -1,8 +1,8 @@
 include("test.jl")
 #Função para plotar todos os gráficos
 function main()
-    #dim=[2,5,10,100,250,500,750,1000,2000,4000,6000,8000,10000]
-    dim=[i for i=100:100:900]
+    dim=[10,100,500,750,1000,2500,5000,7500,10000]
+    #dim=[i for i=100:100:900]
 
     #Tempo da Inversa - todos os problemas
     plot_times_all(dim,"inv")
@@ -10,7 +10,8 @@ function main()
     #Gráficos para os demais métodos
     for i=1:1
         #Tempos dos demais métodos - LU, Chol e PLU
-        plot_times(i,dim,["plu","lu","chol"])
+        plot_times(i,dim,["plu","chol"])
+        plot_times(i,dim,["lu"])
 
         #Erros para cada problema
         scatter_error(i,dim,["plu","chol"])
