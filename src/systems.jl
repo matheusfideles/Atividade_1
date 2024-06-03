@@ -22,8 +22,7 @@ function solveSystem(factor,b,opt="plu")
    n=size(b); x=zeros(n);
    #Considerando o caso LU\PLU\Cholesky
    if opt != "inv"
-      b_aux=b
-      y=zeros(n)
+      b_aux=b; y=zeros(n)
       U=factor.U; L=factor.L
       #Checando a fatoração utilizada e ajustando o vetor b se necessário
       if opt=="plu"

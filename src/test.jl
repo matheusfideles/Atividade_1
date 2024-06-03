@@ -2,8 +2,8 @@ include("matrices.jl")
 include("systems.jl")
 using Plots, LaTeXStrings, DataFrames, PrettyTables
 
-#a=[5,10,50,100,150,200,250,300,350,400,450,500,600,700,800,900]
-#b=[i for i=1000:1000:10000]
+#a=[10,50,100,200,300,400,450,500,600,700,800,900]
+#b=[1000,2500,5000,10000]
 #dim=vcat(a,b)
 
 #Retorna a matriz com os números de condições de cada problema para valores dados de n no vetor dim
