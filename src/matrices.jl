@@ -26,7 +26,7 @@ function diagMatrix(i,n)
         end
     elseif i==4
         cont=n; k=0;
-        while cont>=10 
+        while cont>=10  
             for i=1:10
                 D[10*k+i,10*k+i]=k+1
             end
@@ -140,7 +140,7 @@ function testMatrix(i,n,simet=true)
     else
         #Caso da não simétrica
         N=randSqMatrix(n); Qrn=qr(N); qn=Matrix(Qrn.Q)
-        A=qm.Q*D*qn'
+        A=qm*D*qn'
     end
     return A
 end

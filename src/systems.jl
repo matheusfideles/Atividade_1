@@ -41,32 +41,32 @@ function resultMatrix(i,n_conj,metodos=["plu","lu","chol","inv"],simet=true)
    #Matriz para armazenar os valores]
    n=size(n_conj,1)
    m=size(metodos,1)
-   resp=zeros(size(n_conj,1),3,m)
+   resp=zeros(n,3,m)
 
    #Iterando para cada problema/metodo e resolvendo
-   for i=1:n
+   for j=1:n
       #Gerando matrizes e vetores do problema
-      A=testMatrix(i,n_conj[i],simet)
-      x_opt=2*rand(n_conj[i],1).-1; b=A*x_opt #x* para o problema e vetor b
-      x=zeros(n_conj[i]); errox=0; erroAx=0; tempo=0  #Vetores auxiliares para armazenar o ponto obtido, erros, resíduos e tempo
-      for j=1:m
-         if metodos[j]=="inv"
+      A=testMatrix(i,n_conj[j],simet)
+      x_opt=2*rand(n_conj[j],1).-1; b=A*x_opt #x* para o problema e vetor b
+      x=zeros(n_conj[j]); errox=0; erroAx=0; tempo=0  #Vetores auxiliares para armazenar o ponto obtido, erros, resíduos e tempo
+      for k=1:m
+         if metodos[k]=="inv"
             #Armazena o tempo de achar inversa + resolver sistema
-            tempo=@elapsed x=solveSystem(A,b,metodos[j])
+            tempo=@elapsed x=solveSystem(A,b,metodos[k])
             #Calculando erro e resíduo e colocando na matriz
             errox=norm(x-x_opt)/norm(x_opt)
             erroAx=norm(A*x-b)/norm(b)
-            resp[i,:,j].=[errox,erroAx,tempo]
+            resp[j,:,k].=[errox,erroAx,tempo]
          else
             #Armazena o tempo de achar a fatoração e resolver o sistema
             tempo=@elapsed begin
-               factor,opt_s=getFactorization(A,metodos[j])
+               factor,opt_s=getFactorization(A,metodos[k])
                x=solveSystem(factor,b,opt_s)
             end
             #Erros e anexando na matriz
             errox=norm(x-x_opt)/norm(x_opt)
             erroAx=norm(A*x-b)/norm(b)
-            resp[i,:,j].=[errox,erroAx,tempo]
+            resp[j,:,k].=[errox,erroAx,tempo]
          end
       end
    end

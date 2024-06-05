@@ -98,16 +98,16 @@ function scatter_error(i,dim,met=["plu","lu","chol","inv"])
     savefig("images/Erros - Metodos - Prob ("*Char(64+i)*") - "*aux)
 end
 
-#Função que plota os tempos para cada problema de teste com um conjunto de dimensões dado e um método específico
-function plot_times_all(dim,met)
+#Função que plota os tempos para dados problemas com um conjunto de dimensões dado e um método específico
+function plot_times_all(prob,dim,met)
     #Iterando para cada problema
     tempo=[]
-    for i=1:9
+    for i in prob
         resp=resultMatrix(i,dim,[met])
         push!(tempo,resp[:,3,1])
     end
 
-    #Arrumando label do gráfico
+    #Arrumando nome do png do gráfico
     if met=="inv"
         metodo="Inversa"
     elseif met=="plu"
@@ -118,8 +118,11 @@ function plot_times_all(dim,met)
         metodo="Cholesky"
     end
 
+    #Arrumando label
+    probLetra=[Char(64+i) for i in prob]
+
     #Criando o gráfico e salvando
-    scatter(dim,tempo,label=["A" "B" "C" "D" "E" "F" "G" "H" "I"])
+    scatter(dim,tempo,label=probLetra)
     xlabel!(L"$n$")
     ylabel!(L"$Tempo (s)$")
     savefig("images/Tempos - Todos os prob - "*metodo)
