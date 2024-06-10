@@ -156,7 +156,9 @@ function plot_times(i,dim,met=["plu","lu","chol","inv"])
 
     #Obtendo os dados
     resp=resultMatrix(i,dim,met,true)
+    display(resp)
     tempos=resp[:,3,1:m]
+    display(tempos)
 
     #Construindo o gráfico
     scatter(dim,[tempos[:,j] for j=1:m],label=metodos)
