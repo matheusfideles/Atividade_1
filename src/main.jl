@@ -3,7 +3,7 @@ include("test.jl")
 #Dados
 metodos=["plu","lu","chol","inv"]
 #prob=[1 2 3 4 5 9]
-dim=[10,50,100,500,1000,1500,2000,2500,3000,3500,4000,4500,5000]
+dim=[10,50,100,1000,2000,3000,4000,5000]
 
 #Função para plotar todos os gráficos
 function run(metodos,dim)

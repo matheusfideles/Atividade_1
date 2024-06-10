@@ -24,6 +24,38 @@ function cond_table(dim)
     return df
 end
 
+function time_table(i,dim,met)
+    n=length(dim); m=length(met)
+    resp=resultMatrix(i,dim,met)
+    time_matrix=zeros(n,m)
+
+    #Obtendo as colunas
+    for j=1:m
+        time_matrix[:,j]=resp[:,3,j]
+    end
+
+    #Tratativa dos dados
+    df=DataFrame(Tables.table(time_matrix))
+    
+    #Ajustando os nomes das colunas
+    newname=[]
+    for j=1:m
+        if met[j]=="plu"
+            push!(newname,"LUP")
+        elseif met[j]=="lu"
+            push!(newname,"LU")
+        elseif met[j]=="inv"
+            push!(newname,"Inv.")
+        elseif met[j]=="chol"
+            push!(newname,"Chol.")
+        end
+    end
+
+    rename!(df,Symbol.(newname))
+    pretty_table(df;backend=Val(:latex))
+    return df
+end
+
 #Gráficos de dispersão do residuo relativo para um conjunto de métodos e problema fixo
 function scatter_residue(i,dim,met=["plu","lu","chol","inv"])
     m=size(met,1); resp=resultMatrix(i,dim,met)
