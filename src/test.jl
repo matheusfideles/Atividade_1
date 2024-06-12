@@ -24,18 +24,88 @@ function cond_table(dim)
     return df
 end
 
-function time_table(i,dim,met)
+#Retorna tabelas, para um dado problema, rodando com as dimensões e métodos informados
+function tables(i,dim,met)
     n=length(dim); m=length(met)
     resp=resultMatrix(i,dim,met)
-    time_matrix=zeros(n,m)
+    time_matrix=zeros(n,m); error_matrix=zeros(n,m); residue_matrix=zeros(n,m)
 
     #Obtendo as colunas
     for j=1:m
+        error_matrix[:,j]=resp[:,1,j] 
+        residue_matrix[:,j]=resp[:,2,j]
         time_matrix[:,j]=resp[:,3,j]
     end
 
     #Tratativa dos dados
-    df=DataFrame(Tables.table(time_matrix))
+    dfe=DataFrame(Tables.table(error_matrix))
+    dfr=DataFrame(Tables.table(residue_matrix))
+    dft=DataFrame(Tables.table(time_matrix))
+    
+    #Ajustando os nomes das colunas
+    newname=[]
+    for j=1:m
+        if met[j]=="plu"
+            push!(newname,"LUP")
+        elseif met[j]=="lu"
+            push!(newname,"LU")
+        elseif met[j]=="inv"
+            push!(newname,"Inv.")
+        elseif met[j]=="chol"
+            push!(newname,"Chol.")
+        end
+    end
+
+    rename!(dfe,Symbol.(newname)); rename!(dfr,Symbol.(newname)); rename!(dft,Symbol.(newname))
+    return dfe, dfr, dft
+end
+
+#tabela dos residuos
+function residue_table(i,dim,met)
+    n=length(dim); m=length(met)
+    resp=resultMatrix(i,dim,met)
+    residue_matrix=zeros(n,m)
+
+    #Obtendo as colunas
+    for j=1:m
+        residue_matrix[:,j]=resp[:,2,j]
+    end
+
+    #Tratativa dos dados
+    df=DataFrame(Tables.table(residue_matrix))
+    
+    #Ajustando os nomes das colunas
+    newname=[]
+    for j=1:m
+        if met[j]=="plu"
+            push!(newname,"LUP")
+        elseif met[j]=="lu"
+            push!(newname,"LU")
+        elseif met[j]=="inv"
+            push!(newname,"Inv.")
+        elseif met[j]=="chol"
+            push!(newname,"Chol.")
+        end
+    end
+
+    rename!(df,Symbol.(newname))
+    pretty_table(df;backend=Val(:latex))
+    return df
+end
+
+#Tabela dos erros
+function error_table(i,dim,met)
+    n=length(dim); m=length(met)
+    resp=resultMatrix(i,dim,met)
+    error_matrix=zeros(n,m)
+
+    #Obtendo as colunas
+    for j=1:m
+        error_matrix[:,j]=resp[:,1,j]
+    end
+
+    #Tratativa dos dados
+    df=DataFrame(Tables.table(error_matrix))
     
     #Ajustando os nomes das colunas
     newname=[]
