@@ -37,13 +37,18 @@ function tables(i,dim,met)
         time_matrix[:,j]=resp[:,3,j]
     end
 
+    #Grudando as dimensões na matriz
+    error_matrix=hcat(dim,error_matrix)
+    residue_matrix=hcat(dim,residue_matrix)
+    time_matrix=hcat(dim,time_matrix)
+
     #Tratativa dos dados
     dfe=DataFrame(Tables.table(error_matrix))
     dfr=DataFrame(Tables.table(residue_matrix))
     dft=DataFrame(Tables.table(time_matrix))
     
     #Ajustando os nomes das colunas
-    newname=[]
+    newname=["\backslashbox{Prob.}{n}"]
     for j=1:m
         if met[j]=="plu"
             push!(newname,"LUP")
@@ -55,6 +60,11 @@ function tables(i,dim,met)
             push!(newname,"Chol.")
         end
     end
+
+    #Passando dim para inteiro
+    dfe[!,1]=convert.(Int,dfe[!,1])
+    dfr[!,1]=convert.(Int,dfr[!,1])
+    dft[!,1]=convert.(Int,dft[!,1])
 
     rename!(dfe,Symbol.(newname)); rename!(dfr,Symbol.(newname)); rename!(dft,Symbol.(newname))
     return dfe, dfr, dft
