@@ -70,72 +70,6 @@ function tables(i,dim,met)
     return dfe, dfr, dft
 end
 
-#tabela dos residuos
-function residue_table(i,dim,met)
-    n=length(dim); m=length(met)
-    resp=resultMatrix(i,dim,met)
-    residue_matrix=zeros(n,m)
-
-    #Obtendo as colunas
-    for j=1:m
-        residue_matrix[:,j]=resp[:,2,j]
-    end
-
-    #Tratativa dos dados
-    df=DataFrame(Tables.table(residue_matrix))
-    
-    #Ajustando os nomes das colunas
-    newname=[]
-    for j=1:m
-        if met[j]=="plu"
-            push!(newname,"LUP")
-        elseif met[j]=="lu"
-            push!(newname,"LU")
-        elseif met[j]=="inv"
-            push!(newname,"Inv.")
-        elseif met[j]=="chol"
-            push!(newname,"Chol.")
-        end
-    end
-
-    rename!(df,Symbol.(newname))
-    pretty_table(df;backend=Val(:latex))
-    return df
-end
-
-#Tabela dos erros
-function error_table(i,dim,met)
-    n=length(dim); m=length(met)
-    resp=resultMatrix(i,dim,met)
-    error_matrix=zeros(n,m)
-
-    #Obtendo as colunas
-    for j=1:m
-        error_matrix[:,j]=resp[:,1,j]
-    end
-
-    #Tratativa dos dados
-    df=DataFrame(Tables.table(error_matrix))
-    
-    #Ajustando os nomes das colunas
-    newname=[]
-    for j=1:m
-        if met[j]=="plu"
-            push!(newname,"LUP")
-        elseif met[j]=="lu"
-            push!(newname,"LU")
-        elseif met[j]=="inv"
-            push!(newname,"Inv.")
-        elseif met[j]=="chol"
-            push!(newname,"Chol.")
-        end
-    end
-
-    rename!(df,Symbol.(newname))
-    pretty_table(df;backend=Val(:latex))
-    return df
-end
-
 #Gráficos de dispersão do residuo relativo para um conjunto de métodos e problema fixo
 function scatter_residue(i,dim,met=["plu","lu","chol","inv"])
     m=size(met,1); resp=resultMatrix(i,dim,met)
@@ -210,38 +144,8 @@ function scatter_error(i,dim,met=["plu","lu","chol","inv"])
     savefig("images/Erros - Metodos - Prob ("*Char(64+i)*") - "*aux)
 end
 
-#Função que plota os tempos para dados problemas com um conjunto de dimensões dado e um método específico
-function plot_times_all(prob,dim,met)
-    #Iterando para cada problema
-    tempo=[]
-    for i in prob
-        resp=resultMatrix(i,dim,[met])
-        push!(tempo,resp[:,3,1])
-    end
-
-    #Arrumando nome do png do gráfico
-    if met=="inv"
-        metodo="Inversa"
-    elseif met=="plu"
-        metodo="LU com Piv Parcial"
-    elseif met=="lu"
-        metodo="LU"
-    else
-        metodo="Cholesky"
-    end
-
-    #Arrumando label
-    probLetra=[Char(64+i) for i in prob]
-
-    #Criando o gráfico e salvando
-    scatter(dim,tempo,label=probLetra)
-    xlabel!(L"$n$")
-    ylabel!(L"$Tempo (s)$")
-    savefig("images/Tempos - Todos os prob - "*metodo)
-end
-
 #Função que plota os tempos na resolução do i-esimo problema com os métodos dados para um conjunto de dimensões
-function plot_times(i,dim,met=["plu","lu","chol","inv"])
+function scatter_time(i,dim,met=["plu","lu","chol","inv"])
     m=size(met,1); metodos=Matrix{String}(undef,1,m)
 
     #String para separar os arquivos na hora de gerar os gráficos e não ir sobreescrevendo
@@ -278,3 +182,34 @@ function plot_times(i,dim,met=["plu","lu","chol","inv"])
     ylabel!(L"$Tempo (s)$")
     savefig("images/Tempos - Metodos - ("*Char(64+i)*") - "*aux)
 end
+
+#Função que plota os tempos para dados problemas com um conjunto de dimensões dado e um método específico
+function plot_times_all(prob,dim,met)
+    #Iterando para cada problema
+    tempo=[]
+    for i in prob
+        resp=resultMatrix(i,dim,[met])
+        push!(tempo,resp[:,3,1])
+    end
+
+    #Arrumando nome do png do gráfico
+    if met=="inv"
+        metodo="Inversa"
+    elseif met=="plu"
+        metodo="LU com Piv Parcial"
+    elseif met=="lu"
+        metodo="LU"
+    else
+        metodo="Cholesky"
+    end
+
+    #Arrumando label
+    probLetra=[Char(64+i) for i in prob]
+
+    #Criando o gráfico e salvando
+    scatter(dim,tempo,label=probLetra)
+    xlabel!(L"$n$")
+    ylabel!(L"$Tempo (s)$")
+    savefig("images/Tempos - Todos os prob - "*metodo)
+end
+
