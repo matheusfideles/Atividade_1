@@ -2,7 +2,7 @@ include("test.jl")
 using Suppressor
 
 #Dados - dimensões
-dim=[10,50,100,500,750,1000,2000,3000,4000,5000,6000,7000]
+dim=[10,50,100,500,1000,2000,3000,4000,5000,6000,7000]
 
 #Função para plotar os testes planejados e obter os resultados com as dimensões dadas
 function run_tables(dim)
@@ -29,7 +29,9 @@ function run_tables(dim)
     end
 end
 
-function run_graphics(dim)
+#run_tables(dim)
+
+#=function run_graphics(dim)
     prob=[1 2 3 4 5 9]; df=[]; metodos=["plu","lu","chol"]
     for i in [1 3 4 5 9]
         scatter_error(i,dim,metodos)
@@ -39,7 +41,7 @@ function run_graphics(dim)
     scatter_error(2,dim,["plu","lu"])
     scatter_residue(2,dim,["plu","lu"])
     scatter_time(2,dim,["plu","lu"])
-end
+end=#
 
 #run_tables(dim)
 
