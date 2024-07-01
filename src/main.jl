@@ -2,11 +2,11 @@ include("test.jl")
 using Suppressor
 
 #Dados - dimensões
-dim=[10,50,100,500,1000,2000,3000,4000,5000,6000,7000]
+dim=[1000,2000,3000,4000,5000,6000,7000,8000,9000,10000]
 
 #Função para plotar os testes planejados e obter os resultados com as dimensões dadas
 function run_tables(dim)
-    prob=[1 2 3 4 5 9]; df=[]; metodos=["plu","lu","chol","inv"]
+    prob=[1 2 3 4 5 9]; df=[]; metodos=["plu","lu","chol"]
     #Escrevendo as tabelas em um arquivo de texto
     open("output.txt","w") do io
         for i in [1 3 4 5 9]
@@ -19,7 +19,7 @@ function run_tables(dim)
             end
         end
         #Para o problema 2 não dá pra usar cholesky
-        df=tables(2,dim,["plu","lu","inv"])
+        df=tables(2,dim,["plu","lu"])
         write(io,"Problema (B) \n")
         for j=1:3
             latex_tab=@capture_out pretty_table(df[j], backend=Val(:latex))
@@ -29,7 +29,7 @@ function run_tables(dim)
     end
 end
 
-#run_tables(dim)
+run_tables(dim)
 
 #=function run_graphics(dim)
     prob=[1 2 3 4 5 9]; df=[]; metodos=["plu","lu","chol"]
