@@ -33,7 +33,7 @@ function disp_erro(i,simet,resp,metodos,n_conj)
     if luInMet
         fig=plot(n_conj,erros,xlabel=L"n", yscale=:log10, ylabel="Log. Erro rel.", label=metodos, legend=:topleft, dpi=600)
     else=#
-    fig=plot(n_conj,erros,xlabel=L"n", ylabel="Erro rel.", label=metodos, legend=:topleft, dpi=600)
+    fig=plot(n_conj,erros,xlabel=L"n", ylabel="Erro rel.", label=metodos, marker=:circle, legend=:topleft, dpi=600)
     #end
 
     #Salvando
@@ -66,7 +66,7 @@ function disp_residuo(i,simet,resp,metodos,n_conj)
     if luInMet
         fig=plot(n_conj,residuos,xlabel=L"n", yscale=:log10, ylabel="Log. Resíd. rel.", label=metodos, legend=:topleft,dpi=600)
     else=#
-    fig=plot(n_conj,residuos,xlabel=L"n", ylabel="Resíduo rel.", label=metodos, legend=:topleft,dpi=600)
+    fig=plot(n_conj,residuos,xlabel=L"n", ylabel="Resíduo rel.", marker=:circle, label=metodos, legend=:topleft,dpi=600)
     #end
 
     #Salvando
@@ -83,7 +83,6 @@ function disp_residuo(i,simet,resp,metodos,n_conj)
         savefig(fig,"images/Gráfico - Resid Rel - Simétrico - ("*Char(64+i)*").png")
     else
         savefig(fig,"images/Gráfico - Resid Rel - Não Simétrico - ("*Char(64+i)*").png")
-
     end
 end
 
@@ -97,7 +96,7 @@ function disp_tempo_log(resp,metodos,n_conj)
         push!(tempos, resp[:,3,k])
     end
     #Plotando
-    fig=plot(n_conj, tempos, yscale=:log10, xlabel=L"n", ylabel="Log. Tempo", label=metodos,legend=:topleft,dpi=600)
+    fig=plot(n_conj, tempos, yscale=:log10, xlabel=L"n", ylabel="Log. Tempo", marker=:circle, label=metodos,legend=:topleft,dpi=600)
     return fig
 end
 
@@ -109,7 +108,7 @@ function disp_tempo(resp,metodos,n_conj)
         push!(tempos, resp[:,3,k])
     end
     #Plotando
-    fig=plot(n_conj, tempos, xlabel=L"n", ylabel="Tempo de execução (s)", label=metodos,legend=:topleft,dpi=600)
+    fig=plot(n_conj, tempos, xlabel=L"n", ylabel="Tempo de execução (s)", marker=:circle, label=metodos,legend=:topleft,dpi=600)
     return fig
 end
 
