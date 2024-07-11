@@ -14,81 +14,39 @@ function diagMatrix(i,n)
             D[i,i]=(-1.001)^i
         end
     elseif i==3 
-        cont=n; k=0;
-        while cont>=10 
-            for i=1:10
-                D[10*k+i,10*k+i]=k/100+1
-            end
-            cont-=10; k+=1
-        end
-        for i=1:cont
-            D[10*k+i,10*k+i]=k/100+1
+        for i=1:n
+            k=floor(i/10)
+            D[i,i]=k/100+1
         end
     elseif i==4
-        cont=n; k=0;
-        while cont>=10  
-            for i=1:10
-                D[10*k+i,10*k+i]=k+1
-            end
-            cont-=10; k+=1
+        for i=1:n
+            k=floor(i/10)
+            D[i,i]=k+1
         end
-        for i=1:cont
-            D[10*k+i,10*k+i]=k+1
-        end
-    elseif i==5
-        cont=n; k=0;
-        while cont>=10 
-            for i=1:10
-                D[10*k+i,10*k+i]=k+(1.0001)^i
-            end
-            cont-=10; k+=1
-        end
-        for i=1:cont
-            D[10*k+i,10*k+i]=k+(1.0001)^i
+    elseif i==5 
+        for i=1:n
+            k=floor(i/10)
+            D[i,i]=k+(1.0001)^i
         end
     elseif i==6
-        cont=n; k=0;
-        while cont>=10 
-            for i=1:10
-                D[10*k+i,10*k+i]=10*k+1
-            end
-            cont-=10; k+=1
-        end
-        for i=1:cont
-            D[10*k+i,10*k+i]=10*k+1
+        for i=1:n
+            k=floor(i/10)
+            D[i,i]=10*k+1
         end
     elseif i==7
-        cont=n; k=0;
-        while cont>=10 
-            for i=1:10
-                D[10*k+i,10*k+i]=(-1)^(10*k+i)*10*k+1
-            end
-            cont-=10; k+=1
-        end
-        for i=1:cont
-            D[10*k+i,10*k+i]=(-1)^(10*k+i)*10*k+1
+        for i=1:n
+            k=floor(i/10)
+            D[i,i]=(-1)^i*10*k+1
         end
     elseif i==8
-        cont=n; k=0;
-        while cont>=10 
-            for i=1:10
-                D[10*k+i,10*k+i]=100*k+1
-            end
-            cont-=10; k+=1
-        end
-        for i=1:cont
-            D[10*k+i,10*k+i]=100*k+1
+        for i=1:n
+            k=floor(i/10)
+            D[i,i]=100*k+1
         end
     else
-        cont=n; k=0;
-        while cont>=10  
-            for i=1:10
-                D[10*k+i,10*k+i]=1000*k+1
-            end
-            cont-=10; k+=1
-        end
-        for i=1:cont
-            D[10*k+i,10*k+i]=1000*k+1
+        for i=1:n
+            k=floor(i/10)
+            D[i,i]=10*k+1
         end
     end
     return D
@@ -97,73 +55,57 @@ end
 #Retorna o numero de condição na norma 2 das matrizes de testes sabendo os autovalores
 #cond=lambda_max/lambda_min
 function conditionNumber(i,n)
-    cond=0; kmax=floor((n-1)/10)
+    kmax=floor((n-1)/10)
     if i==1 || i==2
-        cond=1.001^n/1.001
+        return 1.001^n/1.001
     elseif i==3
-        cond=kmax/100+1
+        return kmax/100+1
     elseif i==4
-        cond=kmax+1
+        return kmax+1
     elseif i==5
-        cond=(kmax+1.0001^n)/1.0001
+        return (kmax+1.0001^n)/1.0001
     elseif i==6 || i==7
-        cond=10*kmax+1
+        return 10*kmax+1
     elseif i==8
-        cond=100*kmax+1
+        return 100*kmax+1
     else
-        cond=1000*kmax+1
+        return 1000*kmax+1
     end
-    return cond
 end
 
 #Gera uma matriz aleatória nxn com entradas em [-M,M]
 function randSqMatrix(n)
-    M=999; R=M*(2*rand(n,n).-1)
-    return R
+    M=999 
+    return 999*(2*rand(n,n).-1)
 end
 
 #Retorna a matriz A do problema, que pode ser simétrica ou não
 #Recebendo a diagonal da i-esima alternativa e a dimensão n da matriz quadrada
 function testMatrix(i,n,simet=true)
-    #Definindo matriz diagonal
-    D=diagMatrix(i,n)
-    #Checamos qual matriz de teste será fornecida (simétrica ou não)
-    M=randSqMatrix(n); Qrm=qr(M); qm=Matrix(Qrm.Q)
-    if simet
-        A=qm*D*qm'
-        #Evitando erro numérico -> Forçando a ser simétrica
-        for i=1:n
-            for j=(i+1):n
-                A[i,j]=A[j,i]
-            end
-        end
-    else
-        #Caso da não simétrica
-        N=randSqMatrix(n); Qrn=qr(N); qn=Matrix(Qrn.Q)
-        A=qm*D*qn'
+    M=randSqMatrix(n); M_qr=qr(M)
+    if simet #caso de ser simétrica
+        A=Symmetric(M_qr.Q*diagMatrix(i,n)*M_qr.Q')
+    else #Caso de não ser simétrica
+        N=randSqMatrix(n); N_qr=qr(N)
+        A=M_qr.Q*diagMatrix(i,n)*N_qr.Q'
     end
     return A
 end
 
-#Função auxiliar que retorna ou a fatoração de Cholesky ou a fatoração PLU ou a fatoração LU de A
+#Solução aleatória e vetor de testes do sistema Ax=b
+function testb(A)
+    n=size(A,1); x=2*rand(n).-1
+    return A*x, x
+end
+
+#Função que retorna fatoração de Cholesky/ PLU/ LU de A
 function getFactorization(A,opt="plu")
-    factor=0
-    opt_saida=opt
-    #Calculando a fatoração desejada
-    if opt=="chol" #Se pedir cholesky e não for possível, retorna PLU
-        try cholesky(A);
-            factor=cholesky(A)
-            opt_saida="chol"
-        catch e
-            factor=lu(A)
-            opt_saida="plu"
-        end
+    #Encontrando a fatoração desejada
+    if opt=="chol"
+        return cholesky(A)
     elseif opt=="lu"
-        factor=lu(A,NoPivot())
-        opt_saida="lu"
+        return lu(A,NoPivot())
     else #caso contrário, retorna PLU
-        factor=lu(A)
-        opt_saida="plu"
+        return lu(A)
     end 
-    return factor, opt_saida
 end

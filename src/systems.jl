@@ -1,74 +1,39 @@
-include("matrices.jl")
+include("Matrices.jl")
 using LinearAlgebra, DataFrames, Latexify, PrettyTables
 
-#Função que retorna a inversa de uma matriz A usando fatoração PLU/Cholesky
-function findInverse(A)
-   #Dimensão da matriz, Alocando a inversa, vetor da base canonica e obtendo a fatoração
-   n=size(A,1); inv=zeros(n,n); b=zeros(n,1)
-   factor, opt_s=getFactorization(A,"chol") #tenta achar cholesky de A
-   #Resolvendo cada um dos sistemas e preenchendo as colunas da inversa
-   for i=1:n 
-      b[i]=1; #Atualizando a coordenada do i-esimo vetor da base canonica
-      inv[:,i]=solveSystem(factor,b,opt_s); #Tenta resolver usando cholesky
-      b[i]=0; #Zerando a entrada para a próxima iteração
-   end
-   return inv
-end
-
-#função resolve o sistema Ax=b e retorna a solução única
-#Usa a fatoração da matriz descrita por factor e opt, ambas informações são argumentos de entrada
-function solveSystem(factor,b,opt="plu")
-   #Variáveis e vetores prealocados
-   n=size(b); x=zeros(n);
-   #Considerando o caso LU\PLU\Cholesky
-   if opt != "inv"
-      b_aux=b; y=zeros(n)
-      U=factor.U; L=factor.L
-      #Checando a fatoração utilizada e ajustando o vetor b se necessário
-      if opt=="plu"
-         b_aux=b[factor.p]
-      end
-      y=L\b_aux; x=U\y
-   else #Caso de resolver com a inversa -> factor=A
-      x=findInverse(factor)*b
+#Função que resolve um sistema linear Ax=b a partir de uma fatoração factor
+#Checamos se é PLU ou LU vendo se existe matriz de permutação na struct factor
+function solveSystem(factor, b)
+   if typeof(factor)==LU{Float64, Matrix{Float64}, Vector{Int64}} #Checando se é LU
+      #Resolvendo os sistemas triangulares, Julia faz a forward/back substitution automatico
+      y=\(factor.L,b[factor.p]); x=\(factor.U,y) 
+   else #Se não, é por Cholesky
+      y=\(factor.L,b); x=\(factor.U,y)
    end
    return x
 end
 
-#Recebe: i -> indice do problema e n_conj -> conjunto contendo os valores de n que queremos testar, método, flag se é simetrica ou não
-#Retorna: Erro relativo, resíduo e tempo de resolução para cada valor de n informado, informação é disposta em uma matriz  
-function resultMatrix(i,n_conj,metodos=["plu","lu","chol","inv"],simet=true)
-   #Matriz para armazenar os valores]
-   n=size(n_conj,1)
-   m=size(metodos,1)
-   resp=zeros(n,3,m)
-
-   #Iterando para cada problema/metodo e resolvendo
-   for j=1:n
-      #Gerando matrizes e vetores do problema
-      A=testMatrix(i,n_conj[j],simet)
-      x_opt=2*rand(n_conj[j],1).-1; b=A*x_opt #x* para o problema e vetor b
-      x=zeros(n_conj[j]); errox=0; erroAx=0; tempo=0  #Vetores auxiliares para armazenar o ponto obtido, erros, resíduos e tempo
-      for k=1:m
-         if metodos[k]=="inv"
-            #Armazena o tempo de achar inversa + resolver sistema
-            tempo=@elapsed x=solveSystem(A,b,metodos[k])
-            #Calculando erro e resíduo e colocando na matriz
-            errox=norm(x-x_opt)/norm(x_opt)
-            erroAx=norm(A*x-b)/norm(b)
-            resp[j,:,k].=[errox,erroAx,tempo]
-         else
-            #Armazena o tempo de achar a fatoração e resolver o sistema
-            tempo=@elapsed begin
-               factor,opt_s=getFactorization(A,metodos[k])
-               x=solveSystem(factor,b,opt_s)
-            end
-            #Erros e anexando na matriz
-            errox=norm(x-x_opt)/norm(x_opt)
-            erroAx=norm(A*x-b)/norm(b)
-            resp[j,:,k].=[errox,erroAx,tempo]
-         end
-      end
+#Função que encontra a inversa de uma matriz A usando a fatoração PLU ou Cholesky
+function findInverse(A)
+   factor=nothing
+   try #Tentamos achar Cholesky primeiro
+      factor=getFactorization(A,"chol")
+   catch e #Se não for possível, nos contentamos com usar plu
+      factor=getFactorization(A,"plu")
    end
-   return resp
+   
+   #Resolvendo os sistemas da forma Ax=e_i para encontrar as colunas da inversa
+   n=size(A,2); e_i=zeros(n); inv=zeros(n,n)
+   for i=1:n
+      e_i[i]=1
+      inv[:,i]=solveSystem(factor,e_i)
+      e_i[i]=0
+   end
+
+   return inv
+end
+
+#Função que recebe a inversa um sistema pela inversa
+function solveInverse(A,b)
+   return findInverse(A)*b
 end
