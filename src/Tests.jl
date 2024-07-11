@@ -1,6 +1,6 @@
 include("Matrices.jl")
 include("Systems.jl")
-using Plots, LaTeXStrings, DataFrames, PrettyTables
+using DataFrames
 
 #Retorna o resultado do i-ésimo problema (Com A Simétrica ou não) para cada dimensão em n_conj e metodos no vetor metodos
 #Recebe: i -> indice do problema e n_conj -> conjunto contendo os valores de n que queremos testar

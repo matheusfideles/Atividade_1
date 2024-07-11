@@ -1,5 +1,5 @@
 include("Matrices.jl")
-using LinearAlgebra, DataFrames, Latexify, PrettyTables
+using LinearAlgebra, DataFrames
 
 #Função que resolve um sistema linear Ax=b a partir de uma fatoração factor
 #Checamos se é PLU ou LU vendo se existe matriz de permutação na struct factor

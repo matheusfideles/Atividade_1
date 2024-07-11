@@ -1,6 +1,5 @@
 include("Tests.jl")
 include("Graphs.jl")
-using Suppressor
 
 #Dados - dimensões
 dim=[2,5,10,50]
