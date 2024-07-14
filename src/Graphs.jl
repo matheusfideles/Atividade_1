@@ -97,6 +97,10 @@ function disp_tempo_log(resp,metodos,n_conj)
     end
     #Plotando
     fig=plot(n_conj, tempos, yscale=:log10, xlabel=L"n", ylabel="Log. Tempo", marker=:circle, label=metodos,legend=:topleft,dpi=600)
+    
+    #Plotando uma coisa de O(n^3) para comparação
+    tempos_cubico = tempos[1][1] * (n_conj ./ n_conj[1]).^3
+    plot!(n_conj, tempos_cubico, label=L"O(\log{(n^3)})", linestyle=:dash, lw=2, marker=:x)
     return fig
 end
 
