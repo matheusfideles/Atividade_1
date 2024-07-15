@@ -35,5 +35,5 @@ function graph_all(dim)
     end
 end
 
-#time_table([2,5,10,100,1000,2000],["plu","lu","chol","inv"])
-graph_all([100,200,300,400,500,600,700,800,900,1000])
+time_table([2,5,10,100,1000,2000],["plu","lu","chol","inv"])
+#graph_all([2,5,10,100,1000,10000])
