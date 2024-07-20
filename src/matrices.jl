@@ -46,7 +46,7 @@ function diagMatrix(i,n)
     else
         for i=1:n
             k=floor(i/10)
-            D[i,i]=10*k+1
+            D[i,i]=1000*k+1
         end
     end
     return D
@@ -55,7 +55,7 @@ end
 #Retorna o numero de condição na norma 2 das matrizes de testes sabendo os autovalores
 #cond=lambda_max/lambda_min
 function conditionNumber(i,n)
-    kmax=floor((n-1)/10)
+    kmax=floor((n)/10)
     if i==1 || i==2
         return 1.001^n/1.001
     elseif i==3
@@ -64,8 +64,10 @@ function conditionNumber(i,n)
         return kmax+1
     elseif i==5
         return (kmax+1.0001^n)/1.0001
-    elseif i==6 || i==7
+    elseif i==6
         return 10*kmax+1
+    elseif i==7
+        return abs((-1)^n*10*kmax+1)
     elseif i==8
         return 100*kmax+1
     else
